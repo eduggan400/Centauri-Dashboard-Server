@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edge-Server Control Console</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="glass-panel wide-panel">
+    <div class="panel-header">
+        <div>
+            <h2>Edge-Server Control Console</h2>
+            <span class="status-badge pulse">SYSTEM ONLINE</span>
+        </div>
+        <button id="logoutBtn" class="btn btn-outline">Disconnect</button>
+    </div>
+
+    <div class="control-grid">
+        <!-- Standard Server Management -->
+        <div class="control-section">
+            <h3>Server Management</h3>
+            <div class="button-group">
+                <button class="btn ctrl-btn" data-action="Save Configuration">💾 Save Config</button>
+                <button class="btn ctrl-btn" data-action="Purge Cache">🧹 Purge Cache</button>
+                <button class="btn ctrl-btn" data-action="System Diagnostics">📊 Diagnostics</button>
+            </div>
+        </div>
+
+        <!-- Power & Emergency Controls -->
+        <div class="control-section">
+            <h3>Power Controls</h3>
+            <div class="button-group">
+                <button class="btn btn-warning ctrl-btn" data-action="Stop Server Process">⏸️ Stop Server</button>
+                <button class="btn btn-danger ctrl-btn" data-action="EMERGENCY KILL SWITCH">☠️ KILL SWITCH</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <div class="status-title">Terminal Console</div>
+        <div id="outputConsole">System initialised. Awaiting command...</div>
+    </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
