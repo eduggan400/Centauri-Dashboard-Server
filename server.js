@@ -68,7 +68,7 @@ app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }))
 
 // Redirect root (/) to login
 app.get('/', (req, res) => {
-  res.redirect('/login.html');
+  res.redirect('/index.html');
 });
 
 // Auth Middleware
@@ -104,7 +104,7 @@ app.post('/logout', (req, res) => {
 app.get('/control.html', (req, res, next) => {
   if (!req.session || !req.session.authenticated) {
     writeLog('UNAUTHORIZED', `Attempted access to /control.html without session.`, COLORS.red, '⛔');
-    return res.redirect('/login.html');
+    return res.redirect('/index.html');
   }
   writeLog('PAGE ACCESS', `User '${req.session.user}' accessed Control Page.`, COLORS.magenta, '👁️');
   next();
