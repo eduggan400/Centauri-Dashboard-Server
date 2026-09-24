@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,19 +35,32 @@ function writeLog(type, message, color = COLORS.reset, emoji = 'ℹ️') {
   });
 }
 
-// Helper to format IPv6/IPv4 addresses neatly
+// Helper to format IPv6/IPv4 client addresses neatly
 function getClientIp(req) {
   const rawIp = req.ip || req.socket.remoteAddress || 'Unknown IP';
   return rawIp.startsWith('::ffff:') ? rawIp.replace('::ffff:', '') : rawIp;
+}
+
+// Helper to find the host machine's primary local network IP
+function getLocalNetworkIp() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name]) {
+      // Skip internal (i.e. 127.0.0.1) and non-IPv4 addresses
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return '127.0.0.1';
 }
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Incoming connection logger middleware to track access IP
+// Incoming connection logger middleware
 app.use((req, res, next) => {
-  // Ignore noise from static asset requests
   if (!req.path.startsWith('/public') && !req.path.includes('.')) {
     const ip = getClientIp(req);
     writeLog('ACCESS', `Request ${req.method} ${req.path} from IP: ${ip}`, COLORS.cyan, '🌐');
@@ -91,7 +105,11 @@ app.post('/api/control/action', (req, res) => {
   res.json({ status: 'Executed', action: actionName, ip: clientIp });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  writeLog('SERVER STATUS', `Edge-Server active on http://localhost:${PORT}`, COLORS.green, '🚀');
+// Start Server on 0.0.0.0 to allow local network connections
+const server = app.listen(PORT, '0.0.0.0', () => {
+  const localIp = getLocalNetworkIp();
+  const activePort = server.address().port;
+
+  writeLog('SERVER STATUS', `Edge-Server active on http://localhost:${activePort}`, COLORS.green, '🚀');
+  writeLog('NETWORK ACCESS', `LAN Access URL: http://${localIp}:${activePort}`, COLORS.magenta, '📡');
 });
