@@ -1,11 +1,13 @@
 const express = require('express');
-const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const LOG_FILE = path.join(__dirname, 'server.log');
+
+// Enable trust proxy to correctly extract IP addresses if behind a reverse proxy (e.g., Docker, Nginx)
+app.enable('trust proxy');
 
 // ANSI Color Codes for Terminal Styling
 const COLORS = {
@@ -19,7 +21,7 @@ const COLORS = {
   bold: '\x1b[1m'
 };
 
-// Logging helper
+// Logging helper function
 function writeLog(type, message, color = COLORS.reset, emoji = 'ℹ️') {
   const timestamp = new Date().toISOString();
   const fileEntry = `[${timestamp}] [${type}] ${message}\n`;
@@ -32,94 +34,43 @@ function writeLog(type, message, color = COLORS.reset, emoji = 'ℹ️') {
   });
 }
 
+// Helper to format IPv6/IPv4 addresses neatly
+function getClientIp(req) {
+  const rawIp = req.ip || req.socket.remoteAddress || 'Unknown IP';
+  return rawIp.startsWith('::ffff:') ? rawIp.replace('::ffff:', '') : rawIp;
+}
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Session Configuration
-app.use(session({
-  secret: 'super-secret-key-change-this',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { httpOnly: true, maxAge: 3600000 }
-}));
-
-// Connection / Disconnection Logger
+// Incoming connection logger middleware to track access IP
 app.use((req, res, next) => {
-  const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  const username = req.session.user ? req.session.user : 'Anonymous';
-
-  if (!req.session.connected) {
-    req.session.connected = true;
-    writeLog('CONNECT', `User connected | IP: ${userIp} | Session User: ${username}`, COLORS.cyan, '🔌');
+  // Ignore noise from static asset requests
+  if (!req.path.startsWith('/public') && !req.path.includes('.')) {
+    const ip = getClientIp(req);
+    writeLog('ACCESS', `Request ${req.method} ${req.path} from IP: ${ip}`, COLORS.cyan, '🌐');
   }
-
-  res.on('finish', () => {
-    if (req.path === '/logout' && req.method === 'POST') {
-      writeLog('DISCONNECT', `User logged out | User: ${username}`, COLORS.yellow, '👋');
-    }
-  });
-
   next();
 });
 
-// Serve public static assets
-app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
+// Serve public static assets directly
+app.use(express.static(path.join(__dirname, 'public'), { index: 'control.html' }));
 
-// Redirect root (/) to login
+// Root route direct serve
 app.get('/', (req, res) => {
-  res.redirect('/index.html');
+  res.sendFile(path.join(__dirname, 'public', 'control.html'));
 });
 
-// Auth Middleware
-function requireAuth(req, res, next) {
-  if (req.session && req.session.authenticated) {
-    return next();
-  }
-  return res.status(401).json({ error: 'Unauthorized' });
-}
-
-// Routes
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-
-  if (username === 'admin' && password === 'secret123') {
-    req.session.authenticated = true;
-    req.session.user = username;
-    writeLog('AUTH SUCCESS', `User '${username}' logged in successfully.`, COLORS.green, '🔓');
-    return res.json({ success: true, redirect: '/control.html' });
-  }
-
-  writeLog('AUTH FAILURE', `Failed login attempt for user '${username}'.`, COLORS.red, '🚨');
-  return res.status(401).json({ success: false, message: 'Invalid credentials' });
-});
-
-app.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.json({ success: true });
-  });
-});
-
-// Secure Control Page Route
-app.get('/control.html', (req, res, next) => {
-  if (!req.session || !req.session.authenticated) {
-    writeLog('UNAUTHORIZED', `Attempted access to /control.html without session.`, COLORS.red, '⛔');
-    return res.redirect('/index.html');
-  }
-  writeLog('PAGE ACCESS', `User '${req.session.user}' accessed Control Page.`, COLORS.magenta, '👁️');
-  next();
-});
-
-// Secure Action Endpoint
-app.post('/api/control/action', requireAuth, (req, res) => {
+// Direct Action Endpoint
+app.post('/api/control/action', (req, res) => {
   const { actionName } = req.body;
-  const username = req.session.user;
+  const clientIp = getClientIp(req);
 
   if (actionName === 'EMERGENCY KILL SWITCH') {
-    writeLog('KILL SWITCH', `EMERGENCY KILL TRIGGERED BY '${username}'. SHUTTING DOWN!`, COLORS.red, '💥');
-    res.json({ status: 'Terminating', action: actionName });
+    writeLog('KILL SWITCH', `EMERGENCY KILL TRIGGERED by IP: ${clientIp}. SHUTTING DOWN!`, COLORS.red, '💥');
+    res.json({ status: 'Terminating', action: actionName, ip: clientIp });
 
-    // Shut down process after short delay
     setTimeout(() => {
       process.exit(1);
     }, 1000);
@@ -127,8 +78,8 @@ app.post('/api/control/action', requireAuth, (req, res) => {
   }
 
   if (actionName === 'Stop Server Process') {
-    writeLog('SERVER STOP', `Server stop initiated by '${username}'.`, COLORS.yellow, '🛑');
-    res.json({ status: 'Stopping', action: actionName });
+    writeLog('SERVER STOP', `Server stop initiated by IP: ${clientIp}.`, COLORS.yellow, '🛑');
+    res.json({ status: 'Stopping', action: actionName, ip: clientIp });
 
     setTimeout(() => {
       process.exit(0);
@@ -136,8 +87,8 @@ app.post('/api/control/action', requireAuth, (req, res) => {
     return;
   }
 
-  writeLog('BUTTON CLICK', `User '${username}' triggered action: '${actionName}'`, COLORS.yellow, '🔘');
-  res.json({ status: 'Executed', action: actionName });
+  writeLog('BUTTON CLICK', `Action '${actionName}' triggered by IP: ${clientIp}`, COLORS.yellow, '🔘');
+  res.json({ status: 'Executed', action: actionName, ip: clientIp });
 });
 
 // Start Server
