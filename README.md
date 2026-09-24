@@ -25,7 +25,7 @@ Edge-Server/
 │   ├── login.html       # Login portal
 │   ├── control.html     # Secure control panel
 │   ├── style.css        # Liquid Glass CSS theme
-│   └── app.js           # Client-side API handler
+│   └── app.js           # Client-side FAST API handler
 ├── .gitignore
 ├── package.json
 ├── README.md
