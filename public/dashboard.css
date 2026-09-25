@@ -1,0 +1,2162 @@
+:root {
+    color-scheme: dark;
+    --bg: #090d12;
+    --line: #263242;
+    --text: #f1f5f9;
+    --muted: #91a0b4;
+    --accent: #43d9a3;
+    --danger: #ff6b6b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(900px 500px at 50% -120px, #1c3542 0%, var(--bg) 64%);
+    color: var(--text);
+}
+
+.shell {
+    max-width: 1280px;
+    min-height: 100vh;
+    margin: auto;
+    padding: 24px;
+}
+
+.shell:fullscreen {
+    max-width: none;
+    padding: 0;
+    background: var(--bg);
+}
+
+.shell:fullscreen header {
+    position: absolute;
+    z-index: 3;
+    top: 16px;
+    left: 24px;
+    right: 24px;
+}
+
+.shell:fullscreen .camera {
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: 0;
+}
+
+.shell:fullscreen .live {
+    top: auto;
+    left: auto;
+    right: 18px;
+    bottom: calc(var(--controls-panel-height, 74px) + 30px);
+}
+
+
+.shell:fullscreen .status {
+    display: none;
+}
+
+.shell:not(.both-view):fullscreen #settingsButton {
+    display: inline-flex;
+}
+
+#fullscreenLayoutButton {
+    display: none;
+}
+
+.shell:not(.both-view):fullscreen #fullscreenLayoutButton {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    padding: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+#fullscreenLayoutButton svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.shell:fullscreen .overlay {
+    position: fixed;
+    z-index: 2;
+    display: block;
+    left: 16px;
+    bottom: 16px;
+    width: min(430px, calc(100% - 32px));
+    margin: 0;
+    background: #0710189c;
+}
+
+.shell:fullscreen .temperature-label {
+    margin: 15px 0 10px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: clamp(1.25rem, 3vw, 1.7rem);
+    margin: 0;
+    letter-spacing: -.04em;
+}
+
+.sub {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: .88rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    border: 1px solid var(--line);
+    background: #1a2532;
+    color: var(--text);
+    border-radius: 9px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font: inherit;
+}
+
+button:hover {
+    background: #243244;
+}
+
+button.primary {
+    background: var(--accent);
+    color: #062117;
+    border-color: var(--accent);
+    font-weight: 700;
+}
+
+.camera {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #04070a;
+    aspect-ratio: 16/8.4;
+    box-shadow: 0 24px 70px #0008;
+}
+
+.camera img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.camera .empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    text-align: center;
+    padding: 24px;
+}
+
+.camera img[hidden],
+.camera .empty[hidden] {
+    display: none;
+}
+
+.live {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #09130fcc;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--danger);
+}
+
+.online .dot {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+}
+
+.live {
+    flex-wrap: wrap;
+    max-width: calc(100% - 28px);
+}
+
+.live>.dot {
+    flex-shrink: 0;
+}
+
+.replay-recording {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 9px;
+    margin-left: 2px;
+    border-left: 1px solid #ffffff40;
+    color: var(--danger);
+}
+
+.recording-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.replay-recording[hidden],
+.live:not(.online) .replay-recording {
+    display: none;
+}
+
+.overlay {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .9fr);
+    align-items: end;
+    gap: 28px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 18px;
+    border: 1px solid #ffffff2b;
+    border-radius: 13px;
+    background: #101923;
+    box-shadow: 0 8px 30px #0006;
+}
+
+.overlay-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.overlay-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.live.online .dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 0 #43d9a3aa;
+    animation: connection-pulse 1.5s infinite;
+}
+
+.refresh-button {
+    display: grid;
+    place-items: center;
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    border-color: #ffffff2b;
+    border-radius: 7px;
+    background: #0a121a70;
+    color: #b8c7d7;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.refresh-button:hover {
+    background: #243244;
+    color: var(--text);
+}
+
+@keyframes connection-pulse {
+    0% {
+        box-shadow: 0 0 0 0 #43d9a3aa;
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px #43d9a300;
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 #43d9a300;
+    }
+}
+
+.job-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.05rem;
+    font-weight: 650;
+    margin: 7px 0 14px;
+}
+
+.label {
+    color: var(--muted);
+    font-size: .76rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.temperature-label {
+    margin: 0 0 10px;
+}
+
+.progress-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.progress-row strong {
+    font-size: 1.9rem;
+    letter-spacing: -.05em;
+}
+
+.track {
+    height: 9px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #263342;
+    margin: 9px 0 8px;
+}
+
+.fill {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), #75e9c4);
+    transition: width .35s;
+}
+
+.fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, #ffffff80 50%, transparent 70%);
+    transform: translateX(-100%);
+    animation: progress-shimmer 2.4s ease-in-out infinite;
+}
+
+@keyframes progress-shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    75%,
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .fill::after {
+        animation: none;
+        display: none;
+    }
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+.print-control-panel {
+    position: absolute;
+    z-index: 4;
+    right: 14px;
+    bottom: 14px;
+    width: 260px;
+    max-width: calc(100% - 28px);
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #0710189c;
+}
+
+.print-controls {
+    display: flex;
+    gap: 6px;
+    width: fit-content;
+    margin-top: 0;
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: #07101870;
+}
+
+.shell:fullscreen .print-control-panel {
+    position: fixed;
+    z-index: 4;
+    right: 18px;
+    bottom: 18px;
+    width: 260px;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #0710189c;
+}
+
+.print-control-panel .print-controls {
+    width: 100%;
+}
+
+.print-control-panel .print-controls button {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 34px;
+    justify-content: center;
+    padding: 8px;
+}
+
+
+
+.print-controls svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    fill: currentColor;
+}
+
+.print-control-panel[hidden] {
+    display: none;
+}
+
+.shell .overlay[hidden],
+.temperatures[hidden] {
+    display: none;
+}
+
+
+.print-controls button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    font-size: .78rem;
+}
+
+.print-controls .resume-print {
+    color: var(--accent);
+}
+
+.print-controls .stop-print {
+    color: var(--danger);
+}
+
+.print-controls button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    background: #1a2532;
+}
+
+.print-controls button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.print-control-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.toggle-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+}
+
+.toggle-setting input {
+    width: 38px;
+    height: 22px;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+dialog h3 {
+    margin: 20px 0 8px;
+    font-size: 1rem;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.stat {
+    padding: 13px;
+    border: 1px solid #ffffff25;
+    background: #07101870;
+    border-radius: 11px;
+}
+
+.stat .value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    margin-top: 4px;
+}
+
+.stat .label {
+    font-size: .68rem;
+}
+
+.target-temperature {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.light-toggle {
+    position: absolute;
+    z-index: 4;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    border-color: var(--line);
+    border-radius: 9px;
+    background: #1a2532;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1;
+    transition: color .2s, background .2s, border-color .2s, box-shadow .2s;
+}
+
+.light-toggle[hidden] {
+    display: none;
+}
+
+.light-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.shell:fullscreen .button-group {
+    align-items: center;
+}
+
+.shell:fullscreen .light-toggle {
+    position: static;
+    flex-shrink: 0;
+}
+
+.light-toggle:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.light-toggle[aria-pressed="true"] {
+    border-color: #ffe08275;
+    background: #4b3f1370;
+    color: #ffe082;
+    box-shadow: 0 0 12px #ffdd6552;
+}
+
+.status {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+.status[hidden] {
+    display: none;
+}
+
+.status b {
+    color: var(--text);
+}
+
+footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 32px;
+    padding: 20px 0 5px;
+    color: #91a0b4;
+    font-size: .78rem;
+    letter-spacing: .025em;
+    text-align: center;
+}
+
+footer::before {
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    content: "";
+    background: linear-gradient(90deg, transparent, #43d9a36b 35%, #ffffff45 50%, #43d9a36b 65%, transparent);
+}
+
+footer strong {
+    color: #dce7f2;
+    font-size: .8rem;
+    font-weight: 650;
+    letter-spacing: .04em;
+}
+
+.footer-mark {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #43d9a35c;
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: .65rem;
+    box-shadow: 0 0 18px #43d9a324;
+}
+
+.shell:fullscreen footer {
+    display: none;
+}
+
+dialog {
+    width: min(500px, calc(100% - 32px));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #121923;
+    color: var(--text);
+    padding: 22px;
+    box-shadow: 0 20px 70px #000b;
+}
+
+dialog::backdrop {
+    background: #0009;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.settings-header h2 {
+    margin: 0;
+}
+
+.settings-header button {
+    margin: 0;
+}
+
+dialog p {
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.45;
+}
+
+dialog .settings-notice {
+    color: var(--danger);
+}
+
+.field-progress {
+    position: relative;
+}
+
+.field-progress input {
+    padding-right: 40px;
+}
+
+.field-progress .spinner {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    width: 15px;
+    height: 15px;
+    margin-top: -8px;
+    border: 2px solid #ffffff26;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: field-spinner .7s linear infinite;
+}
+
+@keyframes field-spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .field-progress .spinner {
+        animation-duration: 2.5s;
+    }
+}
+
+label {
+    display: block;
+    margin: 14px 0 5px;
+    font-size: .82rem;
+    color: #c6d1df;
+}
+
+input,
+select {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: #091018;
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px;
+    font: inherit;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+@media (max-width:720px) {
+    .shell {
+        padding: 16px
+    }
+
+    .camera {
+        aspect-ratio: 4/3
+    }
+
+    .overlay {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 12px
+    }
+
+    .temperature-label {
+        margin: 0 0 10px
+    }
+
+    .shell:fullscreen .overlay {
+        left: 10px;
+        bottom: 10px;
+        width: calc(100% - 20px)
+    }
+
+    .shell:fullscreen .temperature-label {
+        margin: 15px 0 10px
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(3, 1fr)
+    }
+}
+
+@media (max-width:760px) {
+    .shell:fullscreen .overlay {
+        bottom: 150px;
+        max-height: calc(100vh - 230px);
+        overflow: auto;
+    }
+}
+
+.printer-switch {
+    display: flex;
+    gap: 4px;
+}
+
+.printer-switch[hidden] {
+    display: none;
+}
+
+.printer-switch button[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+
+.printer-switch button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (max-width:540px) {
+    header {
+        flex-wrap: wrap;
+    }
+}
+
+.panel-toggle {
+    display: none;
+}
+
+#statsPanelContent {
+    display: contents;
+}
+
+.shell:fullscreen .panel-toggle:not([hidden]) {
+    position: absolute;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    top: 0;
+    bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: 0;
+    line-height: 1;
+}
+
+.panel-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+}
+
+.stats-panel-toggle {
+    right: 0;
+}
+
+.controls-panel-toggle {
+    left: 0;
+}
+
+.panel-toggle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    margin-left: -4px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: translateX(-2px) rotate(45deg);
+}
+
+.stats-panel-toggle[aria-expanded="true"]::before,
+.controls-panel-toggle[aria-expanded="false"]::before {
+    transform: translateX(2px) rotate(-135deg);
+}
+
+.shell:fullscreen .overlay,
+.shell:fullscreen .print-control-panel {
+    overflow: hidden;
+    transition: transform .36s cubic-bezier(.22, 1, .36, 1);
+}
+
+.shell:fullscreen .overlay {
+    padding-right: 52px;
+}
+
+.shell:fullscreen .print-control-panel {
+    padding-left: 42px;
+    width: 294px;
+}
+
+.shell:fullscreen #statsPanelContent {
+    display: block;
+    max-height: inherit;
+    overflow: auto;
+}
+
+.shell:fullscreen .overlay.fullscreen-collapsed {
+    transform: translateX(calc(-100% - 16px + 35px));
+}
+
+.shell:fullscreen .print-control-panel.fullscreen-collapsed {
+    transform: translateX(calc(100% + 18px - 35px));
+}
+
+.shell:fullscreen .live {
+    transition: bottom .36s cubic-bezier(.22, 1, .36, 1), right .36s cubic-bezier(.22, 1, .36, 1);
+}
+
+.shell:fullscreen.fullscreen-controls-collapsed .live {
+    bottom: 18px;
+    right: 44px;
+}
+
+.shell:fullscreen .overlay.fullscreen-collapsed,
+.shell:fullscreen .print-control-panel.fullscreen-collapsed {
+    background: #07101840;
+    border-color: #ffffff18;
+    box-shadow: none;
+}
+
+@media (max-width:760px) {
+    .shell:fullscreen #statsPanelContent {
+        max-height: calc(100vh - 268px);
+    }
+}
+
+@media (max-width:720px) {
+    .shell:fullscreen .overlay.fullscreen-collapsed {
+        transform: translateX(calc(-100% - 10px + 35px));
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+
+    .shell:fullscreen .overlay,
+    .shell:fullscreen .print-control-panel {
+        transition: none;
+    }
+
+    .shell:fullscreen .live {
+        transition: none;
+    }
+}
+
+
+/* Each panel runs an independent connection and scopes controls to its printer. */
+.shell.both-view {
+    max-width: 1920px;
+}
+
+.both-view>.camera,
+.both-view>.overlay,
+.both-view>.status,
+.both-view>footer,
+.both-view #settingsButton {
+    display: none;
+}
+
+.both-printers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.both-printers[hidden] {
+    display: none;
+}
+
+.both-printers iframe {
+    width: 100%;
+    height: 900px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--bg);
+}
+
+.embedded-dashboard {
+    background: var(--bg);
+}
+
+.embedded-dashboard .shell {
+    min-height: 0;
+    padding: 16px;
+}
+
+.embedded-dashboard footer {
+    display: none;
+}
+
+.embedded-dashboard #fullscreenButton {
+    display: none;
+}
+
+.shell.both-view:fullscreen {
+    padding: 20px;
+    overflow: auto;
+}
+
+.shell.both-view:fullscreen>header {
+    position: static;
+}
+
+.shell.both-view:fullscreen #printerSwitch {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    .both-printers {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* The combined fullscreen view must never reveal the parent printer's UI. */
+.shell.both-view>.camera,
+.shell.both-view>.overlay,
+.shell.both-view>.status,
+.shell.both-view #lightToggle {
+    display: none;
+}
+
+.device-panel {
+    margin-top: 8px;
+    border-top: 1px solid var(--line);
+    font-size: .78rem;
+}
+
+.device-panel summary {
+    padding: 10px 2px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.device-control-row {
+    margin: 0 0 10px;
+}
+
+.device-control-row label {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 5px;
+    font-size: .78rem;
+}
+
+.device-control-row label span,
+.device-hint {
+    color: var(--muted);
+}
+
+.device-control-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.device-control-inputs input {
+    width: 0;
+    min-width: 0;
+    flex: 1;
+    margin: 0;
+    padding: 6px;
+    font-size: .78rem;
+}
+
+.device-control-inputs button {
+    padding: 6px 8px;
+    font-size: .75rem;
+}
+
+.device-control-inputs button:disabled,
+.device-control-inputs input:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.device-hint {
+    font-size: .7rem;
+    line-height: 1.4;
+}
+
+#controlsPanelContent {
+    max-height: min(480px, 65vh);
+    overflow-y: auto;
+}
+
+/* Phone layout: keep the feed clear and put controls in the page flow. */
+@media (max-width: 720px) {
+    .shell:not(:fullscreen) {
+        padding: 16px max(12px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        min-height: 100svh;
+    }
+
+    .shell:not(:fullscreen) header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .shell:not(:fullscreen) header>.button-group {
+        display: contents;
+    }
+
+    .shell:not(:fullscreen) header>div:first-child {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .shell:not(:fullscreen) #settingsButton {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .shell:not(:fullscreen) #fullscreenButton {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .shell:not(:fullscreen) .printer-switch {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        padding: 4px;
+        background: #101923;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+    }
+
+    .printer-switch button {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    #settingsButton,
+    #closeButton,
+    .refresh-button,
+    .light-toggle {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .shell:not(:fullscreen) .camera {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        aspect-ratio: auto;
+        border-radius: 14px;
+    }
+
+    .shell:not(:fullscreen) .camera img,
+    .shell:not(:fullscreen) .camera .empty {
+        grid-column: 1;
+        grid-row: 1;
+        position: static;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        min-width: 0;
+    }
+
+    .shell:not(:fullscreen) .camera .empty {
+        padding: 64px 24px;
+    }
+
+    .shell:not(:fullscreen) .print-control-panel {
+        position: static;
+        grid-row: 2;
+        width: 100%;
+        max-width: none;
+        padding: 12px;
+        border: 0;
+        border-top: 1px solid var(--line);
+        border-radius: 0;
+        background: #101923;
+    }
+
+    .shell:not(:fullscreen) #controlsPanelContent {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .print-control-panel .print-controls button {
+        height: 48px;
+    }
+
+    .device-panel summary {
+        min-height: 44px;
+        padding: 14px 2px;
+    }
+
+    .device-control-inputs input,
+    .device-control-inputs button {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+
+    .device-control-row {
+        margin-bottom: 16px;
+    }
+
+    .device-control-row label {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .shell:not(:fullscreen) .overlay {
+        margin-top: 12px;
+        padding: 14px;
+        gap: 20px;
+    }
+
+    .job-details,
+    .temperatures {
+        min-width: 0;
+    }
+
+    .shell:not(:fullscreen) .job-title {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+    }
+
+    .details {
+        flex-wrap: wrap;
+    }
+
+    .stat-grid {
+        gap: 6px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stat {
+        padding: 10px 7px;
+    }
+
+    .stat .value {
+        font-size: 1.1rem;
+    }
+
+    .stat .label {
+        letter-spacing: .04em;
+    }
+
+    .target-temperature {
+        overflow-wrap: anywhere;
+    }
+
+    .status {
+        align-items: flex-start;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .status>.dot {
+        flex-shrink: 0;
+        margin-top: 6px;
+    }
+
+    footer {
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 24px;
+    }
+
+    .both-printers {
+        gap: 12px;
+    }
+
+    .embedded-dashboard .shell:not(:fullscreen) {
+        min-height: 0;
+        padding: 12px;
+    }
+
+    dialog {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - max(12px, env(safe-area-inset-top)));
+        margin: auto 0 0;
+        padding: 18px max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+        border-radius: 20px 20px 0 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    dialog input,
+    dialog select {
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    dialog .toggle-setting input {
+        min-height: 22px;
+        flex-shrink: 0;
+    }
+
+    dialog .actions button {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+/* Mobile fullscreen uses the whole viewport for the camera.
+   The short landscape breakpoint also covers phones rotated sideways. */
+@media (max-width: 720px),
+(max-width: 960px) and (max-height: 600px) {
+    .shell:not(.both-view):fullscreen #fullscreenLayoutButton {
+        display: none;
+    }
+
+    .shell:fullscreen {
+        height: 100dvh;
+        min-height: 0;
+        overflow-y: auto;
+        padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        overscroll-behavior: contain;
+    }
+
+    .shell:fullscreen header {
+        position: static;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .shell:fullscreen header .sub {
+        display: none;
+    }
+
+    .shell:fullscreen .button-group {
+        flex-wrap: wrap;
+    }
+
+    .shell:fullscreen .button-group button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .shell:not(.both-view):fullscreen .camera {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: min(56dvh, 72vw) auto;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+    }
+
+    .shell:fullscreen .camera img,
+    .shell:fullscreen .camera .empty {
+        position: static;
+        grid-area: 1 / 1;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .shell:fullscreen .camera .empty {
+        padding: 48px 20px 20px;
+    }
+
+    .shell:fullscreen .live,
+    .shell:fullscreen.fullscreen-controls-collapsed .live {
+        top: 10px;
+        left: 10px;
+        right: auto;
+        bottom: auto;
+    }
+
+    .shell:fullscreen .print-control-panel,
+    .shell:fullscreen .overlay {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        max-width: none;
+        max-height: none;
+        padding: 0;
+        transform: none;
+        transition: none;
+        background: #101923;
+        border: 1px solid var(--line);
+    }
+
+    .shell:fullscreen .print-control-panel {
+        grid-area: 2 / 1;
+        border-width: 1px 0 0;
+        border-radius: 0;
+    }
+
+    .shell:fullscreen .overlay {
+        margin-top: 12px;
+    }
+
+    .shell:fullscreen .panel-toggle:not([hidden]) {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 40px 12px 14px;
+        text-align: left;
+        display: block;
+        font-size: 0;
+    }
+
+    .shell:fullscreen .panel-toggle::before {
+        left: auto;
+        right: 18px;
+        transform: rotate(135deg);
+    }
+
+    .shell:fullscreen .panel-toggle[aria-expanded="false"]::before {
+        transform: rotate(45deg);
+    }
+
+    .shell:fullscreen .panel-toggle::after {
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .shell:fullscreen .controls-panel-toggle::after {
+        content: 'Print controls';
+    }
+
+    .shell:fullscreen .stats-panel-toggle::after {
+        content: 'Current job & temperatures';
+    }
+
+    .shell:fullscreen #controlsPanelContent,
+    .shell:fullscreen #statsPanelContent {
+        max-height: none;
+        overflow: visible;
+        padding: 0 12px 12px;
+    }
+
+    .shell:fullscreen .overlay.fullscreen-collapsed,
+    .shell:fullscreen .print-control-panel.fullscreen-collapsed {
+        transform: none;
+        background: #101923;
+        border-color: var(--line);
+    }
+
+    .shell:fullscreen .fullscreen-collapsed>#controlsPanelContent,
+    .shell:fullscreen .fullscreen-collapsed>#statsPanelContent {
+        display: none;
+    }
+
+    .shell:fullscreen .job-title {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .shell:fullscreen .stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .shell:fullscreen .details {
+        flex-wrap: wrap;
+    }
+
+    .shell:fullscreen .print-controls button {
+        height: 48px;
+    }
+
+    .shell:fullscreen .device-panel summary {
+        min-height: 44px;
+    }
+
+    .shell:fullscreen .device-control-inputs input,
+    .shell:fullscreen .device-control-inputs button {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .shell:not(.both-view):fullscreen {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .shell:not(.both-view):fullscreen .camera {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .shell:not(.both-view):fullscreen .camera img {
+        object-fit: contain;
+    }
+
+    .shell:not(.both-view):fullscreen .camera .empty {
+        position: absolute;
+    }
+
+    .shell:not(.both-view):fullscreen>header {
+        position: absolute;
+        top: max(10px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        left: auto;
+        margin: 0;
+    }
+
+    .shell:not(.both-view):fullscreen>header>div:first-child,
+    .shell:not(.both-view):fullscreen #printerSwitch,
+    .shell:not(.both-view):fullscreen .print-control-panel,
+    .shell:not(.both-view):fullscreen .overlay,
+    .shell:not(.both-view):fullscreen .live {
+        display: none;
+    }
+}
+
+/* Transparent fullscreen control dock. */
+.temperature-gauge {
+    display: none;
+}
+
+.shell.desktop-fullscreen:fullscreen {
+    padding: 0;
+    overflow: hidden;
+}
+
+.shell.desktop-fullscreen:fullscreen>.camera {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+}
+
+.shell.desktop-fullscreen:fullscreen .camera img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.shell.desktop-fullscreen:fullscreen>header {
+    position: absolute;
+    top: 16px;
+    left: 24px;
+    right: 24px;
+}
+
+.shell.desktop-fullscreen:fullscreen .live {
+    top: 88px;
+    left: 24px;
+    right: auto;
+    bottom: auto;
+}
+
+.fullscreen-dock[hidden],
+.shell:fullscreen .fullscreen-dock[hidden] {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-dock {
+    position: absolute;
+    z-index: 5;
+    bottom: max(26px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 300px minmax(240px, 1fr) 180px;
+    align-items: end;
+    gap: 36px;
+    color: #fff;
+    text-shadow: 0 1px 5px #000, 0 2px 14px #000;
+    max-height: calc(100dvh - 110px);
+    overflow: auto;
+    scrollbar-width: none;
+    padding: 6px max(24px, env(safe-area-inset-right)) 6px max(24px, env(safe-area-inset-left));
+}
+
+.shell:fullscreen .fullscreen-dock::-webkit-scrollbar {
+    display: none;
+}
+
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>#fullscreenTemperatures,
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>.overlay,
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>.print-control-panel {
+    position: relative;
+    isolation: isolate;
+}
+
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>#fullscreenTemperatures::before,
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>.overlay::before,
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>.print-control-panel::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    z-index: -1;
+    border-radius: 16px;
+    background: rgba(7, 16, 24, .48);
+    border: 1px solid rgba(255, 255, 255, .08);
+    pointer-events: none;
+}
+
+.shell:fullscreen .fullscreen-dock .overlay,
+.shell:fullscreen .fullscreen-dock .print-control-panel {
+    position: relative;
+    inset: auto;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.shell:fullscreen .fullscreen-dock #statsPanelContent,
+.shell:fullscreen .fullscreen-dock #controlsPanelContent {
+    display: block;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+}
+
+.shell:fullscreen .fullscreen-dock .fullscreen-collapsed>#statsPanelContent,
+.shell:fullscreen .fullscreen-dock .fullscreen-collapsed>#controlsPanelContent {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-dock .panel-toggle:not([hidden]) {
+    inset: 0 0 auto auto;
+    width: 28px;
+    height: 24px;
+    min-height: 24px;
+    padding: 0;
+}
+
+.shell:fullscreen .fullscreen-dock .panel-toggle::after {
+    content: none;
+}
+
+.shell:fullscreen .fullscreen-dock .panel-toggle::before {
+    left: 50%;
+    right: auto;
+    transform: rotate(135deg);
+}
+
+.shell:fullscreen .fullscreen-dock .panel-toggle[aria-expanded="false"]::before {
+    transform: rotate(-45deg);
+}
+
+.shell:fullscreen .fullscreen-dock #temperaturesPanel,
+.shell:fullscreen .fullscreen-dock .overlay-heading {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-dock .job-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 16px;
+}
+
+.shell:fullscreen .fullscreen-dock .details {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    color: #e2e8f0;
+    font-size: .75rem;
+}
+
+.shell:fullscreen .fullscreen-dock .track {
+    height: 5px;
+    margin: 10px 0 12px;
+    background: #ffffff30;
+}
+
+.shell:fullscreen .fullscreen-dock .fill {
+    box-shadow: 0 0 12px #43d9a355;
+}
+
+.shell:fullscreen .fullscreen-dock .print-controls {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    gap: 10px;
+}
+
+.shell:fullscreen .fullscreen-dock .print-controls button {
+    background: transparent;
+    border: 1px solid #ffffff55;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+}
+
+.shell:fullscreen .fullscreen-dock .print-controls button:hover:enabled {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.shell:fullscreen .fullscreen-dock .device-panel {
+    margin: 0;
+    border: 0;
+    background: transparent;
+}
+
+.shell:fullscreen .fullscreen-dock .device-panel>summary,
+.shell:fullscreen .fullscreen-dock .device-hint {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-dock #deviceControlRows {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.shell:fullscreen .fullscreen-dock .heater-control-row {
+    grid-column: span 3;
+    margin: 0;
+}
+
+.shell:fullscreen .fullscreen-dock .fan-control-row {
+    grid-column: span 2;
+    margin: 0;
+}
+
+.shell:fullscreen .fullscreen-dock .temperature-gauge {
+    display: grid;
+    position: relative;
+    width: 120px;
+    height: 100px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.temperature-gauge svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+.gauge-track {
+    stroke: #ffffff30;
+}
+
+.gauge-arc {
+    stroke: #f6b76a;
+    transition: stroke-dashoffset .6s ease;
+}
+
+.heater-control-row:nth-child(2) .gauge-arc {
+    stroke: #69daca;
+}
+
+.gauge-value {
+    margin-top: 32px;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -.06em;
+    font-variant-numeric: tabular-nums;
+}
+
+.gauge-name {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: #e2e8f0;
+}
+
+.shell:fullscreen .fullscreen-dock .device-control-row label {
+    font-size: 10px;
+    color: #e2e8f0;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.shell:fullscreen .fullscreen-dock .heater-control-row label {
+    justify-content: center;
+    font-size: 0;
+}
+
+.shell:fullscreen .fullscreen-dock .heater-control-row label span {
+    font-size: 10px;
+    color: #e2e8f0;
+}
+
+.shell:fullscreen .fullscreen-dock .fan-control-row label span {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-dock .device-control-inputs {
+    gap: 3px;
+    flex-wrap: wrap;
+}
+
+.shell:fullscreen .fullscreen-dock .device-control-inputs input,
+.shell:fullscreen .fullscreen-dock .device-control-inputs button {
+    background: transparent;
+    border: 1px solid #ffffff40;
+    border-radius: 6px;
+    color: #fff;
+    min-height: 30px;
+    font-size: 11px;
+    padding: 4px;
+    text-shadow: 0 1px 4px #000;
+}
+
+.shell:fullscreen .fullscreen-dock .device-control-inputs input {
+    min-width: 32px;
+}
+
+.shell:fullscreen .fullscreen-dock .device-control-inputs>span {
+    font-size: 10px;
+}
+
+.shell:fullscreen .fullscreen-dock .print-control-status {
+    font-size: 10px;
+    color: #e2e8f0;
+    margin: 8px 0 0;
+}
+
+.shell:fullscreen .fullscreen-dock .print-control-status:empty {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .shell:fullscreen .fullscreen-dock {
+        grid-template-columns: 240px minmax(180px, 1fr) 140px;
+        gap: 16px;
+        bottom: 12px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: calc(100% - 24px);
+        padding: 6px;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-controls {
+        gap: 5px;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-controls button {
+        width: 42px;
+        height: 42px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 620px) {
+    .shell:fullscreen .fullscreen-dock {
+        grid-template-columns: minmax(0, 1fr) 140px;
+        gap: 12px;
+    }
+
+    .shell:fullscreen .fullscreen-dock #fullscreenTemperatures {
+        grid-column: 1 / -1;
+        width: min(300px, 100%);
+    }
+
+    .shell:fullscreen .fullscreen-dock .overlay {
+        grid-column: 1;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-control-panel {
+        grid-column: 2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gauge-arc {
+        transition: none;
+    }
+}
+
+/* Preserve panel widths and share the remaining space between the panels. */
+@media (min-width: 901px) {
+    .shell:fullscreen .fullscreen-dock {
+        grid-template-columns: 300px minmax(0, calc(100% - 672px)) 180px;
+        justify-content: space-between;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-control-panel {
+        width: 180px;
+        justify-self: start;
+    }
+}
+
+@media (min-width: 741px) and (max-width: 900px) {
+    .shell:fullscreen .fullscreen-dock {
+        grid-template-columns: 240px minmax(180px, calc(100% - 512px)) 140px;
+        justify-content: space-between;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-control-panel {
+        width: 140px;
+        justify-self: start;
+    }
+}
+
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock .print-controls {
+    justify-content: center;
+}
+
+.shell.desktop-fullscreen:fullscreen .fullscreen-dock>.overlay {
+    min-width: 0;
+    padding: 8px 12px;
+}
+
+@media (max-width: 740px) {
+    .shell:fullscreen .fullscreen-dock {
+        grid-template-columns: minmax(0, 1fr) 140px;
+        gap: 12px;
+    }
+
+    .shell:fullscreen .fullscreen-dock #fullscreenTemperatures {
+        grid-column: 1 / -1;
+        width: min(300px, 100%);
+    }
+
+    .shell:fullscreen .fullscreen-dock .overlay {
+        grid-column: 1;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-control-panel {
+        grid-column: 2;
+    }
+}
+
+@media (min-width: 741px) {
+    .shell:fullscreen .fullscreen-dock #fullscreenTemperatures {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .shell:fullscreen .fullscreen-dock .overlay {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .shell:fullscreen .fullscreen-dock .print-control-panel {
+        grid-column: 3;
+        grid-row: 1;
+    }
+}
+
+.shell:fullscreen .fullscreen-dock [hidden] {
+    display: none;
+}
+
+.replay-panel {
+    margin: 16px 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #101720;
+}
+
+.replay-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.replay-toolbar p {
+    margin: 0;
+    min-width: 0;
+    color: var(--muted);
+    font-size: .875rem;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.replay-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.replay-actions button {
+    white-space: nowrap;
+}
+
+.replay-actions button,
+#fullscreenReplayButton {
+    width: 40px;
+    height: 40px;
+    padding: 9px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.replay-actions button svg,
+#fullscreenReplayButton svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.replay-panel img {
+    display: block;
+    width: 100%;
+    max-height: 65vh;
+    margin-top: 16px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: #000;
+}
+
+.replay-panel [hidden],
+.replay-panel[hidden],
+.both-view>.replay-panel {
+    display: none;
+}
+
+.replay-panel input {
+    width: 100%;
+    margin: 12px 0;
+}
+
+.replay-time {
+    text-align: right;
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 12px;
+}
+
+.replay-panel small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.replay-panel:has(#replayImage[hidden]) small {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .replay-toolbar {
+        gap: 12px;
+    }
+
+    .replay-panel:has(#replayImage:not([hidden])) .replay-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .replay-panel:has(#replayImage:not([hidden])) .replay-actions {
+        margin-left: auto;
+    }
+}
+
+/* Reuse the replay viewer in fullscreen without moving it in the page layout. */
+.fullscreen-replay-button,
+.fullscreen-replay-close {
+    display: none;
+}
+
+.shell:fullscreen .fullscreen-replay-button {
+    display: block;
+    width: 40px;
+    margin: 0 auto 12px;
+    background: #101923;
+}
+
+.shell:fullscreen>.replay-panel {
+    display: none;
+}
+
+.shell:fullscreen>.replay-panel.fullscreen-replay-open:not([hidden]) {
+    display: block;
+    position: fixed;
+    z-index: 20;
+    top: max(76px, env(safe-area-inset-top));
+    right: max(24px, env(safe-area-inset-right));
+    width: min(720px, calc(100vw - 48px));
+    max-height: calc(100dvh - 100px);
+    overflow: auto;
+    margin: 0;
+    box-shadow: 0 18px 60px #0009;
+}
+
+.shell:fullscreen .replay-panel .fullscreen-replay-close {
+    display: inline-flex;
+}
+
+.shell:fullscreen .replay-panel #replayLive,
+.shell:fullscreen .replay-panel #replayDelete {
+    display: none;
+}
+
+.shell:fullscreen .replay-panel .replay-toolbar {
+    flex-wrap: wrap;
+}
+
+.shell:fullscreen .replay-panel .replay-actions {
+    margin-left: auto;
+}
+
+.shell:fullscreen .replay-panel img {
+    max-height: 45dvh;
+}
+
+@media (max-width: 480px) {
+    .shell:fullscreen>.replay-panel.fullscreen-replay-open:not([hidden]) {
+        right: 12px;
+        width: calc(100vw - 24px);
+        padding: 12px;
+    }
+}
+
+.replay-actions button.replay-view-button,
+#fullscreenReplayButton.replay-view-button {
+    width: auto;
+    padding: 9px 14px;
+    white-space: nowrap;
+}
+
+.shell:fullscreen #fullscreenReplayButton.replay-view-button {
+    width: 100%;
+}
+
+.shell:fullscreen #fullscreenReplayButton[hidden] {
+    display: none;
+}
