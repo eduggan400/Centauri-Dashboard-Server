@@ -2,10 +2,18 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const session = require('express-session');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const LOG_FILE = path.join(__dirname, 'server.log');
+
+// ==========================================
+// EDGE SERVER AUTH CONFIGURATION
+// Set to true to require login.html -> index.html
+// Set to false to bypass login and serve index.html directly
+// ==========================================
+const ENABLE_EDGE_AUTH = true;
 
 // Enable trust proxy to correctly extract IP addresses if behind a reverse proxy (e.g., Docker, Nginx)
 app.enable('trust proxy');
@@ -59,6 +67,16 @@ function getLocalNetworkIp() {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Session Middleware for Edge Auth
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'edge-server-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+  })
+);
+
 // Incoming connection logger middleware
 app.use((req, res, next) => {
   if (!req.path.startsWith('/public') && !req.path.includes('.')) {
@@ -68,12 +86,78 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve public static assets directly
-app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
+// Authentication Guard Middleware
+function authGuard(req, res, next) {
+  // If Auth is OFF, skip check
+  if (!ENABLE_EDGE_AUTH) {
+    return next();
+  }
 
-// Root route direct serve
+  // Allow unrestricted access to login page, static assets (css/js/images), and auth API routes
+  if (
+    req.path === '/login.html' ||
+    req.path === '/api/login' ||
+    req.path.startsWith('/public') ||
+    req.path.includes('.')
+  ) {
+    return next();
+  }
+
+  // Check for active user session
+  const isAuthenticated = req.session && req.session.user;
+  if (isAuthenticated) {
+    return next();
+  }
+
+  // Redirect to login if unauthenticated
+  return res.redirect('/login.html');
+}
+
+// Apply auth guard
+app.use(authGuard);
+
+// Serve public static assets directly
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+
+// Root route handler
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  if (!ENABLE_EDGE_AUTH) {
+    return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
+
+  const isAuthenticated = req.session && req.session.user;
+  if (isAuthenticated) {
+    return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
+
+  return res.redirect('/login.html');
+});
+
+// Auth API - Login Endpoint
+app.post('/api/login', (req, res) => {
+  if (!ENABLE_EDGE_AUTH) {
+    return res.json({ success: true, redirect: '/' });
+  }
+
+  const { username, password } = req.body;
+  const clientIp = getClientIp(req);
+
+  // Simple authentication check (replace with your user lookup/validation logic)
+  if (username === 'admin' && password === 'password') {
+    req.session.user = { username };
+    writeLog('AUTH', `Successful login for ${username} from IP: ${clientIp}`, COLORS.green, '🔑');
+    return res.json({ success: true, redirect: '/' });
+  }
+
+  writeLog('AUTH', `Failed login attempt for ${username} from IP: ${clientIp}`, COLORS.red, '⚠️');
+  return res.status(401).json({ success: false, message: 'Invalid credentials' });
+});
+
+// Auth API - Logout Endpoint
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.json({ success: true, redirect: '/' });
+  });
 });
 
 // Direct Action Endpoint
@@ -112,4 +196,5 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 
   writeLog('SERVER STATUS', `Edge-Server active on http://localhost:${activePort}`, COLORS.green, '🚀');
   writeLog('NETWORK ACCESS', `LAN Access URL: http://${localIp}:${activePort}`, COLORS.magenta, '📡');
+  writeLog('EDGE AUTH', `Authentication status: ${ENABLE_EDGE_AUTH ? 'ENABLED' : 'DISABLED'}`, COLORS.yellow, '🔒');
 });

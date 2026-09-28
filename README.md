@@ -1,101 +1,101 @@
-# 🚀 Edge-Server
 
-A lightweight, high-performance Node.js control server equipped with real-time client IP request logging, automatic LAN hosting IP resolution, direct system action endpoints, ANSI-colored terminal output, and a **Dark Green Liquid Glass** user interface.
+# 🚀 Edge-Server Control Console
 
----
-
-## 🎨 Features
-
-- **Dark Green Liquid Glass UI (`index.html`):** Modern glassmorphism interface with responsive layout panels, glowing status indicators, and embedded live console output.
-- **LAN Hosting & Network IP Detection:** Automatically detects the host machine's local IP address and bound port on startup to display exact network access URLs.
-- **Client IP Tracking:** Every incoming HTTP request and API control action extracts and logs the user's remote IP address (`IPv4` / `IPv6`).
-- **Direct System Controls:** Open control panel architecture providing direct access to server functions without authentication barriers.
-- **Dual Output Logging:** Real-time colored terminal logs with status emojis, coupled with plain-text persistence to a secure `server.log` file.
-- **Power Console:** Interactive controls to execute server actions, save configurations, trigger system diagnostics, or initiate a server process shutdown/kill switch.
+An authentication-enabled control console built with Node.js and Express. It features a dark-mode, glassmorphism UI styled with the **Orbitron** typography theme, unified under a single shared CSS file.
 
 ---
 
-## 📂 Project Structure
+## 📸 Features
+
+* **Glassmorphism UI:** Built with dark theme styling, Orbitron typography, dynamic blur effects, and status indicators.
+* **Unified Styling:** Uses a single shared stylesheet (`/public/style.css`) across both authentication and dashboard interfaces.
+* **Session-Based Authentication:** Protects server controls via Express sessions with configurable `ENABLE_EDGE_AUTH` enforcement.
+* **Network & Access Logging:** Logs incoming requests, local LAN IP addresses, and authentication attempts to both stdout (with ANSI colors) and `server.log`.
+* **Direct Action Endpoints:** Interactive console buttons for server management, diagnostic reports, and process control (including grace stops and kill switch execution).
+
+---
+
+## 📁 Project Structure
 
 ```text
 Edge-Server/
-├── public/
-│   ├── index.html       # Primary Command Center portal
-│   ├── control.html     # Dedicated Control Console & Dashboard
-│   ├── style.css        # Liquid Glass CSS theme
-│   └── app.js           # Client-side API & WebSocket handler
-├── .gitignore
-├── package.json
-├── README.md
-├── server.js            # Node.js backend entry point with LAN & IP logging
-└── server.log           # Persisted server log file
+├── server.js          # Express app entry point & route management
+├── server.log         # Automatically generated server activity log
+├── package.json       # Dependencies and scripts
+└── public/            # Static asset directory
+    ├── index.html     # Main Control Console
+    ├── login.html     # Authentication Interface
+    ├── style.css      # Shared Orbitron Glassmorphism CSS
+    └── app.js         # Frontend console logic
 
 ```
 
 ---
 
-## ⚡ Getting Started
+## 🛠️ Installation & Setup
 
-### Prerequisites
-
-Ensure you have [Node.js](https://nodejs.org/?utm_source=gemini) (v18+) installed on your machine.
-
-### Installation
-
-1. Clone or download this repository:
+1. **Clone or download the repository:**
 ```bash
-git clone [https://github.com/eduggan400/Edge-Server.git](https://github.com/eduggan400/Edge-Server.git)
 cd Edge-Server
 
 ```
 
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 npm install
 
 ```
 
 
-
-### Running the Server
-
-Start the application:
-
+3. **Start the server:**
 ```bash
 npm start
+# or
+node server.js
 
 ```
 
+
+4. **Access the Console:**
+* **Local:** `http://localhost:3000`
+* **LAN Access:** Use the network URL provided in the console log startup banner (e.g., `http://192.168.x.x:3000`).
+
+
+
 ---
 
-## 📡 Terminal Output & IP Logging
+## 🔐 Credentials & Config
 
-When launching **Edge-Server**, the terminal logs both local and LAN network URLs, alongside real-time client activity and request IPs:
+* **Default Admin Username:** `admin`
+* **Default Admin Password:** `password`
 
-```text
-[2026-09-24T15:35:00.000Z] 🚀 [SERVER STATUS] Edge-Server active on http://localhost:3000
-[2026-09-24T15:35:00.005Z] 📡 [NETWORK ACCESS] LAN Access URL: [http://192.168.1.120:3000](http://192.168.1.120:3000)
-[2026-09-24T15:35:12.410Z] 🌐 [ACCESS] Request GET / from IP: 192.168.1.50
-[2026-09-24T15:35:18.102Z] 🔘 [BUTTON CLICK] Action 'Save Configuration' triggered by IP: 192.168.1.50
-[2026-09-24T15:35:25.789Z] 🛑 [SERVER STOP] Server stop initiated by IP: 127.0.0.1
+### Toggling Authentication
+
+In `server.js`, you can bypass the login screen during local testing by setting:
+
+```javascript
+const ENABLE_EDGE_AUTH = false;
 
 ```
 
----
-
-## 🛠️ Tech Stack
-
-* **Runtime:** Node.js
-* **Framework:** Express.js (`trust proxy` enabled for accurate IP resolution)
-* **Styling:** CSS3 (Flexbox/Grid, Backdrop Filters, Custom CSS Variables)
-* **Protocols:** WebSockets, REST API
+Set back to `true` to re-enable session-based route protection.
 
 ---
 
-## 📜 License
+## ⚡ API Reference
 
-Licensed under the [MIT License](https://www.google.com/search?q=LICENSE&utm_source=gemini).
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/login` | Authenticates username/password and establishes session |
+| `POST` | `/api/logout` | Destroys current session and redirects to login |
+| `POST` | `/api/control/action` | Triggers direct server commands (`Save Config`, `Purge Cache`, `Stop Server Process`, `EMERGENCY KILL SWITCH`) |
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License]
 
 ```
 
