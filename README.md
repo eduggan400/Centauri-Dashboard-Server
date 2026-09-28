@@ -1,4 +1,3 @@
-
 # 🚀 Edge-Server Control Console
 
 An authentication-enabled control console built with Node.js and Express. It features a dark-mode, glassmorphism UI styled with the **Orbitron** typography theme, unified under a single shared CSS file.
@@ -27,7 +26,6 @@ Edge-Server/
     ├── login.html     # Authentication Interface
     ├── style.css      # Shared Orbitron Glassmorphism CSS
     └── app.js         # Frontend console logic
-
 ```
 
 ---
@@ -35,33 +33,26 @@ Edge-Server/
 ## 🛠️ Installation & Setup
 
 1. **Clone or download the repository:**
-```bash
-cd Edge-Server
-
-```
-
+   ```bash
+   git clone https://github.com/eduggan400/Edge-Server.git
+   cd Edge-Server
+   ```
 
 2. **Install dependencies:**
-```bash
-npm install
-
-```
-
+   ```bash
+   npm install
+   ```
 
 3. **Start the server:**
-```bash
-npm start
-# or
-node server.js
-
-```
-
+   ```bash
+   npm start
+   # or
+   node server.js
+   ```
 
 4. **Access the Console:**
-* **Local:** `http://localhost:3000`
-* **LAN Access:** Use the network URL provided in the console log startup banner (e.g., `http://192.168.x.x:3000`).
-
-
+   * **Local:** `http://localhost:3000`
+   * **LAN Access:** Use the network URL provided in the console log startup banner (e.g., `http://192.168.x.x:3000`).
 
 ---
 
@@ -76,7 +67,6 @@ In `server.js`, you can bypass the login screen during local testing by setting:
 
 ```javascript
 const ENABLE_EDGE_AUTH = false;
-
 ```
 
 Set back to `true` to re-enable session-based route protection.
@@ -95,8 +85,4 @@ Set back to `true` to re-enable session-based route protection.
 
 ## 📄 License
 
-This project is open-source and available under the [MIT License]
-
-```
-
-```
+This project is open-source and available under the [MIT License](LICENSE).
