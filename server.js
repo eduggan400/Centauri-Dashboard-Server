@@ -13,7 +13,7 @@ const LOG_FILE = path.join(__dirname, 'server.log');
 // Set to true to require login.html -> index.html
 // Set to false to bypass login and serve index.html directly
 // ==========================================
-const ENABLE_EDGE_AUTH = true;
+const ENABLE_EDGE_AUTH = false;
 
 // Enable trust proxy to correctly extract IP addresses if behind a reverse proxy (e.g., Docker, Nginx)
 app.enable('trust proxy');
