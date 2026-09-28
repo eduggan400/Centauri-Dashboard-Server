@@ -69,11 +69,11 @@ app.use((req, res, next) => {
 });
 
 // Serve public static assets directly
-app.use(express.static(path.join(__dirname, 'public'), { index: 'control.html' }));
+app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
 
 // Root route direct serve
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'control.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Direct Action Endpoint
